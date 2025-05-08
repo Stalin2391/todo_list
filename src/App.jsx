@@ -1,14 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
   const [input, setInput] = useState("");
   const [todoList, setTodoList] = useState([]);
 
+  useEffect(() => {
+    const storedTodos = localStorage.getItem("todos");
+    if (storedTodos) {
+      setTodoList(JSON.parse(storedTodos));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todoList));
+  }, [todoList]);
+
   const handleAddTodo = () => {
     if (input.trim() === "") return;
     const newList = {
-      id: todoList.length + 1,
+      id: Date.now(), 
       text: input,
       completed: false,
     };
@@ -17,7 +28,7 @@ function App() {
   };
 
   const handleDelete = (id) => {
-    const newItem = todoList.filter((item) => item.id != id);
+    const newItem = todoList.filter((item) => item.id !== id);
     setTodoList(newItem);
   };
 
@@ -28,14 +39,12 @@ function App() {
     setTodoList(newTodo);
   };
 
-  console.log(todoList.length);
-
   return (
     <div className="container">
       <div className="todo-actions">
         <input
           type="text"
-           placeholder="Enter List"
+          placeholder="Enter List"
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
